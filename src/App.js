@@ -1,23 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
-
+import React from "react";
+import Signup from "./components/Signup/Signup";
+import Login from "./components/Login/Login";
+import Chatapp from "./components/Chatapp/Chatapp";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { UserAuth } from "./components/AuthContext";
 function App() {
+
+  const {currentUser} = UserAuth()
+  // protecting routes
+  const ProtectedRoute = ({ children }) => {
+    const { currentUser } = UserAuth();
+
+    if (!currentUser) {
+      return <Navigate to="/login"></Navigate>;
+    }
+
+    return children;
+  };
+  console.log(currentUser)
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Chatapp />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route path="/signup" element={<Signup />}></Route>
+        <Route path="/login" element={<Login />}></Route>
+      </Routes>
     </div>
   );
 }
