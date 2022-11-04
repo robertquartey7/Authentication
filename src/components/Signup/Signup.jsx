@@ -11,7 +11,6 @@ import { db } from "../../firebase-config";
 import { doc, setDoc } from "firebase/firestore";
 
 
-
 function Signup() {
   const { createUser } = UserAuth();
   const navigate = useNavigate();
@@ -49,43 +48,47 @@ function Signup() {
     createUser(user.email, user.password)
       .then(async (userData) => {
         // creating a storage ref
-
         // creating a ref of the storage
         const storageRef = ref(storage, userData.user.uid);
         // uploading the file to the bucket
         uploadBytesResumable(storageRef, file)
           .then((data) => {
-            getDownloadURL(data.ref).then(async(downloadURL) => {
+            getDownloadURL(data.ref).then(async (downloadURL) => {
               updateProfile(userData.user, {
-                displayName:`${user.firstName}`,
+                displayName: `${user.firstName}`,
                 photoURL: downloadURL,
               });
 
               setErrorStatus(200);
               setError("Account Created");
-              
-               // create a collection
+
+              // create a collection
               await setDoc(doc(db, "users", userData.user.uid), {
-                uid:userData.user.uid,
-                displayName:`${user.firstName} ${user.lastName}`,
-                email:user.email,
-                photoURL:downloadURL
+                uid: userData.user.uid,
+                displayName: `${user.firstName} ${user.lastName}`,
+                email: user.email,
+                photoURL: downloadURL,
               });
-
-
-              navigate('/')
+              
+              // creating user chat data
+              
+              
+              navigate("/");
             });
           })
           .catch((err) => {
             console.log(err);
           });
-
-         
-        
       })
+
+
+
+      
+
       .catch((err) => {
         console.log(err);
       });
+
   };
 
   return (
